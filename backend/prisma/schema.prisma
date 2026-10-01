@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  SELLER
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  REJECTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+}
+
+enum PaymentMethod {
+  COD
+  PAYWAY
+}
+
+model User {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  phone        String?     @unique
+  passwordHash String
+  role         Role
+
+  addresses    Address[]
+  shop         Shop?
+  cart         Cart?
+  orders       Order[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Shop {
+  id           String      @id @default(uuid())
+  sellerId     String      @unique
+  seller       User        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  name         String
+  description  String?
+  logoUrl      String?
+  coverUrl      String?
+
+  addressText  String
+  latitude     Float
+  longitude    Float
+
+  isOpen       Boolean     @default(true)
+  isApproved   Boolean     @default(true)
+
+  categories   Category[]
+  products     Product[]
+  carts        Cart[]
+  orders       Order[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Category {
+  id           String      @id @default(uuid())
+  shopId       String
+  shop         Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  name         String
+  sortOrder    Int         @default(0)
+
+  products     Product[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([shopId, name])
+}
+
+model Product {
+  id           String      @id @default(uuid())
+  shopId       String
+  shop         Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  categoryId   String
+  category     Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  name         String
+  description  String?
+  price        Int
+  imageUrl     String?
+  isAvailable  Boolean     @default(true)
+
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Address {
+  id           String      @id @default(uuid())
+  customerId   String
+  customer     User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  label        String
+  recipientName String
+  phone        String
+  addressText  String
+  latitude     Float
+  longitude    Float
+  isDefault    Boolean     @default(false)
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Cart {
+  id           String      @id @default(uuid())
+  customerId   String      @unique
+  customer     User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  shopId       String
+  shop         Shop        @relation(fields: [shopId], references: [id], onDelete: Restrict)
+
+  items        CartItem[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model CartItem {
+  id           String      @id @default(uuid())
+  cartId       String
+  cart         Cart        @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  productId    String
+  product      Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  quantity     Int
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id                    String        @id @default(uuid())
+
+  customerId            String
+  customer              User          @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  shopId                String
+  shop                  Shop          @relation(fields: [shopId], references: [id], onDelete: Restrict)
+
+  status                OrderStatus   @default(PENDING)
+  paymentStatus         PaymentStatus @default(UNPAID)
+  paymentMethod         PaymentMethod
+
+  subtotal              Int
+  deliveryFee           Int
+  total                 Int
+  currency              String        @default("KHR")
+
+  deliveryRecipientName String
+  deliveryPhone         String
+  deliveryAddressText   String
+  deliveryLatitude      Float
+  deliveryLongitude     Float
+
+  items                 OrderItem[]
+  payment               Payment?
+
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+model OrderItem {
+  id           String      @id @default(uuid())
+
+  orderId      String
+  order        Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId    String?
+  product      Product?    @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  productName  String
+  unitPrice    Int
+  quantity     Int
+
+  createdAt    DateTime    @default(now())
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+
+  orderId         String        @unique
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  provider        String
+  transactionId   String?       @unique
+  amount          Int
+  currency        String        @default("KHR")
+  status          PaymentStatus @default(PENDING)
+
+  providerResponse Json?
+
+  paidAt          DateTime?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
