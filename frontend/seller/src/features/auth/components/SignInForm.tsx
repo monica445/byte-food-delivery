@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { BoxArrowInRight, Lock, Person } from "react-bootstrap-icons";
 import { Button } from "./Button";
 import { Alert } from "./Alert";
-import { ApiError } from "../http/http";
+import { ApiError } from "../../../shared/api/http";
 import { useAuth } from "../hooks/useAuth";
 import { validateSignIn, type FieldErrors } from "../utils/validate";
 import { TextInput } from "./TextInput";

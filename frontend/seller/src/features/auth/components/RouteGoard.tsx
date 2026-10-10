@@ -13,6 +13,6 @@ export function RequireAuth() {
 /** Sign-in / sign-up routes: signed-in sellers go to the dashboard. */
 export function GuestOnly() {
   const { user } = useAuth();
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/dashboard" replace />;
   return <Outlet />;
 }

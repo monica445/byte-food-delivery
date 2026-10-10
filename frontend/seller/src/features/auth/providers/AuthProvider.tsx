@@ -7,7 +7,7 @@ import type {
   SignUpInput,
 } from "../types/auth.types";
 import { AuthContext, type AuthContextValue } from "./authContext";
-import { ApiError } from "../http/http";
+import { ApiError } from "../../../shared/api/http";
 
 const STORAGE_KEY = "byteme.seller.session";
 

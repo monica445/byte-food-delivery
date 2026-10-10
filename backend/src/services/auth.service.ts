@@ -43,7 +43,7 @@ function isValidEmail(email: string): boolean {
 }
 
 function createToken(userId: string, role: Role): string {
-  return jwt.sign({ sub: userId, role }, JWT_SECRET!, { expiresIn: "15m" });
+  return jwt.sign({ id: userId, role }, JWT_SECRET!, { expiresIn: "15m" });
 }
 
 export async function registerUser(data: {

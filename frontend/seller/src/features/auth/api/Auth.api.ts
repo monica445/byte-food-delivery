@@ -1,10 +1,10 @@
-import { post } from "../http/http";
+import { post } from "../../../shared/api/http";
+
 import type {
   AuthResponse,
   SignInInput,
   SignUpInput,
 } from "../types/auth.types";
-import { isEmail } from "../utils/validate";
 
 export function registerSeller(input: SignUpInput) {
   return post<AuthResponse>("/auth/register", {
@@ -16,13 +16,8 @@ export function registerSeller(input: SignUpInput) {
 }
 
 export function loginSeller(input: SignInInput) {
-  const value = input.identifier.trim();
-  const contact = isEmail(value)
-    ? { email: value.toLowerCase() }
-    : { phone: value.replace(/[\s-]/g, "") };
-
   return post<AuthResponse>("/auth/login", {
-    ...contact,
+    identifier: input.identifier.trim(),
     password: input.password,
   });
 }

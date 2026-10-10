@@ -56,10 +56,13 @@ model Shop {
   sellerId     String      @unique
   seller       User        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 
+  shopCategoryId String?
+  shopCategory   ShopCategory? @relation(fields: [shopCategoryId], references: [id], onDelete: SetNull)
+
   name         String
   description  String?
   logoUrl      String?
-  coverUrl      String?
+  coverUrl     String?
 
   addressText  String
   latitude     Float
@@ -77,12 +80,26 @@ model Shop {
   updatedAt    DateTime    @updatedAt
 }
 
+model ShopCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  imageUrl    String?
+
+  shops       Shop[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Category {
   id           String      @id @default(uuid())
   shopId       String
   shop         Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   name         String
+  imageUrl    String?
   sortOrder    Int         @default(0)
 
   products     Product[]
