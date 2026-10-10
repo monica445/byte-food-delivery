@@ -2,6 +2,7 @@ import 'package:customer/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:customer/features/auth/views/screens/signup_view.dart';
 import 'package:customer/features/auth/views/widgets/button.dart';
 import 'package:customer/features/auth/views/widgets/text_input.dart';
+import 'package:customer/features/home/views/screens/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,9 +43,10 @@ class _SignInViewState extends State<SignInView> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(
+      Navigator.pushReplacement(
         context,
-      ).showSnackBar(SnackBar(content: Text('Welcome, ${vm.user!.name}!')));
+        MaterialPageRoute(builder: (_) => const HomeView()),
+      );
     }
   }
 

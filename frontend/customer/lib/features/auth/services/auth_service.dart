@@ -44,6 +44,34 @@ class AuthService {
     return user;
   }
 
+  Future<AuthUser?> restoreSession() async {
+    final token = await getToken();
+
+    if (token == null || token.isEmpty) {
+      return null;
+    }
+
+    try {
+      final response = await _dio.get(
+        '/auth/me',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final data = response.data as Map<String, dynamic>;
+
+      return AuthUser.fromJson(data['user'] as Map<String, dynamic>);
+    } on DioException catch (error) {
+      final statusCode = error.response?.statusCode;
+
+      if (statusCode == 401 || statusCode == 403) {
+        await signOut();
+        return null;
+      }
+
+      rethrow;
+    }
+  }
+
   Future<String?> getToken() {
     return _storage.read(key: _tokenKey);
   }

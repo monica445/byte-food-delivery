@@ -169,3 +169,17 @@ export async function loginUser(data: {
     token: createToken(user.id, user.role),
   };
 }
+
+export const getCurrentUser = async (userId: string) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      role: true,
+      createdAt: true,
+    },
+  });
+};

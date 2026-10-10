@@ -4,7 +4,7 @@ import * as categoryService from "../services/category.service";
 export async function getShopCategories(req: Request, res: Response) {
   try {
     const categories = await categoryService.getShopCategories(
-      req.params.shopId,
+      req.params.shopId as string,
     );
 
     return res.status(200).json({
@@ -57,7 +57,7 @@ export async function updateCategory(req: Request, res: Response) {
   try {
     const category = await categoryService.updateCategory(
       req.user!.id,
-      req.params.categoryId,
+      req.params.categoryId as string,
       req.body,
     );
 
@@ -92,7 +92,7 @@ export async function deleteCategory(req: Request, res: Response) {
   try {
     const result = await categoryService.deleteCategory(
       req.user!.id,
-      req.params.categoryId,
+      req.params.categoryId as string,
     );
 
     return res.status(200).json(result);
