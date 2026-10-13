@@ -1,3 +1,5 @@
+import 'package:customer/features/home/services/home_service.dart';
+import 'package:customer/features/home/view_models/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +14,9 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel(AuthService())),
+        ChangeNotifierProvider(
+          create: (_) => HomeViewModel(homeService: HomeService()),
+        ),
       ],
       child: const ByteMeApp(),
     ),
