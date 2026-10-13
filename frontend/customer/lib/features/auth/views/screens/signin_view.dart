@@ -45,7 +45,7 @@ class _SignInViewState extends State<SignInView> {
     if (success) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeView()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     }
   }
